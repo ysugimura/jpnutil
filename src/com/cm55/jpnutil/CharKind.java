@@ -1,111 +1,55 @@
 package com.cm55.jpnutil;
 import static com.cm55.jpnutil.Constants.*;
 
+import java.util.*;
+
 /**
  * 日本語文字種
  */
-public class CharKind {
-
-  public static final int HANKAKU  = 0x0001; // 半角文字
-  public static final int ZENKAKU  = 0x0002; // 全角文字
-  public static final int KANA     = 0x0004; // かな・カナ
-  public static final int KATAKANA = 0x0008; // カタカナ
-  public static final int HIRAGANA = 0x0010; // ひらがな
-  public static final int KANJI    = 0x0020; // 漢字
-  public static final int ANK = 0x0040; // ANK
-
+public enum CharKind {
+  HANKAKU, // 全角
+  ZENKAKU, // 半角
+  KANA, // かな・カナ
+  KATAKANA, // カタカナ
+  HIRAGANA, // ひらがな
+  KANJI, // 漢字
+  ANK; // ANK
+  
   /** 日本語文字種を取得する */
-  public static int get(char c) {
+  public static EnumSet<CharKind> get(char c) {
+    
+    Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+      
     int code = c;
 
     // 全角ひらがな
     if (ZENHIRA_START <= code && code <= ZENHIRA_END)
-      return ZENKAKU | HIRAGANA;
+      return EnumSet.of(ZENKAKU, HIRAGANA, KANA);
 
     // 全角カタカナ
     if (ZENKATA_START <= code && code <= ZENKATA_END)
-      return ZENKAKU | KATAKANA;
+      return EnumSet.of(ZENKAKU, KATAKANA, KANA);
 
     // 全角ANK
     if (ZENANK_START <= code && code <= ZENANK_END) {
-      return ZENKAKU | ANK;
+      return EnumSet.of(ZENKAKU, ANK);
     }
 
     // 半角カタカナ
     if (HANKATA_START <= code && code <= HANKATA_HANDAKUON) {
-      return KATAKANA | HANKAKU;
+      return EnumSet.of(KATAKANA, HANKAKU, KANA);
     }
 
     // 半角ANK
     if (code < 0x100) {
-      return ANK | HANKAKU;
+      return EnumSet.of(ANK, HANKAKU);
     }
 
-
+    // 漢字、4E00–9FCF
+    if (block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
+      return EnumSet.of(KANJI);
+      
     // 不明
-    return 0;
-  }
-
-  public static void main(String[]args) {
-    /*
-     * [[[シットリローション１２０ＭＬ]]]
-[[[サッパリローション１２０ＭＬ]]]
-[[[ベビーソープ]]]
-[[[ＵＶローション]]]
-[[[エメロンシャンプー]]]
-[[[つめかえ用３８０ＭＬ]]]
-[[[エメロンコンディショナー]]]
-     */
-    /*
-    String s = "サッパリ・ローション１２０ＭＬ";
-    s = ZenToHan.convert(s);
-    System.out.println("" + (char)0xff64);
-
-    for (char c: s.toCharArray()) {
-      System.out.println("" + c + ":" + Integer.toHexString(get(c)) + " " + Integer.toHexString(c));
-    }
-    */
-    /*
-    [･]
-    [･]ｰー
-    */
-    char[]misc = new char[] {
-        '×', '*',
-        '’', '\'',
-        '”', '"',
-        '″', '~',
-        '－',  '-',
-        '　', ' ',
-        '、', '､',
-        '。', '｡',
-        '「', '｢',
-        '」', '｣',
-        '゛', 'ﾞ',
-        '゜', 'ﾟ',
-        '・', '･',
-        'ー', 'ｰ',
-        '￥', '\\',
-    };
-    for (int i = 0; i < misc.length; ) {
-      System.out.println("" + Integer.toHexString(misc[i++]));
-      System.out.println("  " + Integer.toHexString(misc[i++]));
-    }
-
-    for (int i = 0xff61;  i <= 0xff65; i++) {
-      System.out.println("/* '" + (char)i + "' */");
-    }
-    char c = '?';
-
-    System.out.println("" + Integer.toHexString(c));
-
-    System.out.println("" + (char)0xff61 + "]");
-    /*
-    System.out.println("" + (char)0xff63 + "]");
-    System.out.println("" + (char)0xff64 + "]");
-    System.out.println("" + (char)0x30fb + "]");
-    System.out.println("" + (char)0xff65 + "]");
-    System.out.println("" + Integer.toHexString('ｰ'));
-    System.out.println("[" + HanToZen.convert("ｰ") + "]");
-    */
+    return EnumSet.noneOf(CharKind.class);
   }
 }

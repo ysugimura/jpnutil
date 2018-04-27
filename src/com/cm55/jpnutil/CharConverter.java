@@ -109,7 +109,6 @@ public class CharConverter {
       super(n);
     }
     public void convert(char c) {
-      //System.out.println("IgnoreWhiteSpaces " + c);
       if (!Character.isWhitespace(c)) super.convert(c);
     }
   }
@@ -142,7 +141,6 @@ public class CharConverter {
       super(n);
     }
     public void convert(char c) {
-      //System.out.println("LowerCase " + c);
       super.convert(Character.toLowerCase(c));
     }
   }

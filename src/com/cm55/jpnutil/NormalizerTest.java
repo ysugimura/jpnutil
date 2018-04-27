@@ -4,13 +4,13 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-public class JpnConverterTest {
+public class NormalizerTest {
 
-  JpnConverter converter;
+  Normalizer converter;
   
   @Before
   public void before() {
-    converter = new JpnConverter();
+    converter = new Normalizer();
   }
   
   @Test

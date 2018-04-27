@@ -8,7 +8,7 @@ import java.util.*;
  * @author ysugimura
  *
  */
-public class JpnConverter {
+public class Normalizer {
 
   /**
    * 文字列の正規化。
