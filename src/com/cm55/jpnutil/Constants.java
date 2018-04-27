@@ -64,12 +64,18 @@ public interface Constants {
   /** 半角ANK数 */
   public static final int HANANK_COUNT = HANANK_END - HANANK_START + 1;
   
-  
-  
+    
   public static final int HANKATA_START     = 0xff61;
-  public static final int HANKATA_END       = 0xff9d;
+  
   public static final int HANKATA_DAKUON    = 0xff9e; // 半角カタカナ濁音
   public static final int HANKATA_HANDAKUON = 0xff9f; // 半角カタカナ半濁音
-    // DAKUON/HANDAKUONがHANKATA_END内に含まれない理由不明
+  
+  public static final int HANKATA_END       = 0xff9f;
+
+  public static final int HANKATA_COUNT = HANKATA_END - HANKATA_START + 1;
+  
+  public static final char ZENKAKU_DAKUON = '゛'; // 0x309b, 全角単一濁音
+  public static final char ZENKAKU_HANDAKUON = '゜'; // 0x309c, 全角単一半濁音
+  
 
 }

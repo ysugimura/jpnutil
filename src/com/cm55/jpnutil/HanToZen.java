@@ -22,75 +22,91 @@ public class HanToZen implements Constants {
   public static class Converter extends CharConverter {
 
     // ペンド中の半角カタカナ
-    private char pendingHankata;
+    private int pendingHankata;
 
     public Converter(CharConverter n) {
       super(n);
     }
-
+    
     public void convert(char c) {
 
       int code = (int)c & 0xffff;
 
-      // ペンド中の半角カタカナのある場合、濁音あるいは半濁音の可能性をチェック
-      if (pendingHankata != 0) {
-        int index = ((int)pendingHankata - HANKATA_START) * 3;
-        char plain = HANKATA_TO_ZENKATA[index + 0];
-        char dakuon = HANKATA_TO_ZENKATA[index + 1];
-        char handakuon = HANKATA_TO_ZENKATA[index + 2];
-        pendingHankata = 0;
-        if (code == HANKATA_DAKUON) {
-          if (dakuon != 0)
-            super.convert(dakuon);
-          else {
-            super.convert(plain);
-            super.convert(ZEN_DAKUON);
-          }
-          return; /* RETURN! */
-        } else if (code == HANKATA_HANDAKUON) {
-          if (handakuon != 0)
-            super.convert(handakuon);
-          else {
-            super.convert(plain);
-            super.convert(ZEN_HANDAKUON);
-          }
-          return; /* RETURN! */
-        } else {
-          super.convert(plain);
-          /* FALL THROUGH! */
-        }
-      }
+      // 半角カタカナの処理。処理された場合はtrueが返される。
+      if (processHankata(code)) return;
 
-      // 半角カタカナ
-      if (HANKATA_START <= code && code <= HANKATA_END) {
-        int index = (code - HANKATA_START) * 3;
-
-        // 濁音あるいは半濁音の可能性のある場合ペンドする。
-        if (HANKATA_TO_ZENKATA[index + 1] != 0 || HANKATA_TO_ZENKATA[index + 2] != 0) {
-          pendingHankata = c;
-          return;
-        }
-
-        // 濁音あるいは半濁音の可能性がない。変換して終了。
-        super.convert(HANKATA_TO_ZENKATA[index]);
+      // 空白
+      if (code == 0x20) {
+        super.convert('\u3000');
         return;
       }
-
+      
       // ANK
       if (HANANK_START <= code && code <= HANANK_END) {
         int index = code - HANANK_START;
-        super.convert(HANANK_TO_ZENANK[index]);
+        super.convert((char)(ZENANK_START + index));
         return;
       }
 
       super.convert(c);
     }
+    
+    boolean processHankata(int code) {
+      // ペンド中の半角カタカナのある場合、濁音あるいは半濁音の可能性をチェック
+      if (processPending(code)) return true;
 
+      // 半角カタカナ
+      if (code < HANKATA_START || HANKATA_END < code) return false;
+      int index = (code - HANKATA_START) * 3;
+
+      // 濁音あるいは半濁音の可能性のある場合ペンドする。
+      if (HANKATA_TO_ZENKATA[index + 1] != 0 || HANKATA_TO_ZENKATA[index + 2] != 0) {
+        pendingHankata = code;
+        return true;
+      }
+
+      // 濁音あるいは半濁音の可能性がない。変換して終了。
+      super.convert(HANKATA_TO_ZENKATA[index]);
+      return true;
+    }
+
+    /** ペンド中の半角カタカナがあり、かつそれを処理した場合にはtrueを返す */
+    boolean processPending(int code) {
+      if (pendingHankata == 0) return false;
+      int index = (pendingHankata - HANKATA_START) * 3;
+      char zenPlain = HANKATA_TO_ZENKATA[index + 0];
+      char zenDakuon = HANKATA_TO_ZENKATA[index + 1];
+      char zenHandakuon = HANKATA_TO_ZENKATA[index + 2];
+      pendingHankata = 0;
+      
+      if (code == HANKATA_DAKUON) {
+        if (zenDakuon != 0)
+          super.convert(zenDakuon);
+        else {
+          super.convert(zenPlain);
+          super.convert(ZENKAKU_DAKUON);
+        }
+        return true; 
+      }
+      
+      if (code == HANKATA_HANDAKUON) {
+        if (zenHandakuon != 0)
+          super.convert(zenHandakuon);
+        else {
+          super.convert(zenPlain);
+          super.convert(ZENKAKU_HANDAKUON);
+        }
+        return true; 
+      }
+      
+      super.convert(zenPlain);
+      return false;
+    }
+    
     /** ペンド文字をフラッシュする */
     public void flush() {
-      //System.out.println("flushing hanToZen");
       if (pendingHankata != 0) {
-        int index = ((int)pendingHankata - HANKATA_START) * 3;
+        int index = (pendingHankata - HANKATA_START) * 3;
         pendingHankata = 0;
         super.convert(HANKATA_TO_ZENKATA[index]);
       }
@@ -98,7 +114,12 @@ public class HanToZen implements Constants {
     }
   }
 
-
+  /**
+   * 半角カタカナ->全角カタカナ変換テーブル
+   * 0:濁音半濁音の無い場合
+   * 1:濁音のある場合
+   * 2:半濁音のある場合
+   */
   static final char[]HANKATA_TO_ZENKATA = new char[] {
     /* ff61 '｡' */ '。', 0, 0,
     /* ff62 '｢' */ '「', 0, 0,
@@ -161,108 +182,10 @@ public class HanToZen implements Constants {
     /* ff9b 'ﾛ' */ 'ロ', 0, 0,
     /* ff9c 'ﾜ' */ 'ワ', 0, 0,
     /* ff9d 'ﾝ' */ 'ン', 0, 0,
+    /* ff9e 'ﾞ' */ ZENKAKU_DAKUON, 0, 0,
+    /* ff9f 'ﾟ' */ ZENKAKU_HANDAKUON, 0, 0,
   };
 
-  static final char ZEN_DAKUON = '゛'; // 0x309b, 全角単一濁音
-  static final char ZEN_HANDAKUON = '゜'; // 0x309c, 全角単一半濁音
 
-  static final int HANANK_START = 0x20;
-  static final int HANANK_END = 0x7E;
-  static char[]HANANK_TO_ZENANK = new char[] {
-    /* 20 ' ' */ '　',
-    /* 21 '!' */ '！',
-    /* 22 '"' */ '”',
-    /* 23 '#' */ '＃',
-    /* 24 '$' */ '＄',
-    /* 25 '%' */ '％',
-    /* 26 '&' */ '＆',
-    /* 27 ''' */ '’',
-    /* 28 '(' */ '（',
-    /* 29 ')' */ '）',
-    /* 2a '*' */ '＊',
-    /* 2b '+' */ '＋',
-    /* 2c ',' */ '，',
-    /* 2d '-' */ '\uFF0D',
-    /* 2e '.' */ '．',
-    /* 2f '/' */ '／',
-    /* 30 '0' */ '０',
-    /* 31 '1' */ '１',
-    /* 32 '2' */ '２',
-    /* 33 '3' */ '３',
-    /* 34 '4' */ '４',
-    /* 35 '5' */ '５',
-    /* 36 '6' */ '６',
-    /* 37 '7' */ '７',
-    /* 38 '8' */ '８',
-    /* 39 '9' */ '９',
-    /* 3a ':' */ '：',
-    /* 3b ';' */ '；',
-    /* 3c '<' */ '＜',
-    /* 3d '=' */ '＝',
-    /* 3e '>' */ '＞',
-    /* 3f '?' */ '？',
-    /* 40 '@' */ '＠',
-    /* 41 'A' */ 'Ａ',
-    /* 42 'B' */ 'Ｂ',
-    /* 43 'C' */ 'Ｃ',
-    /* 44 'D' */ 'Ｄ',
-    /* 45 'E' */ 'Ｅ',
-    /* 46 'F' */ 'Ｆ',
-    /* 47 'G' */ 'Ｇ',
-    /* 48 'H' */ 'Ｈ',
-    /* 49 'I' */ 'Ｉ',
-    /* 4a 'J' */ 'Ｊ',
-    /* 4b 'K' */ 'Ｋ',
-    /* 4c 'L' */ 'Ｌ',
-    /* 4d 'M' */ 'Ｍ',
-    /* 4e 'N' */ 'Ｎ',
-    /* 4f 'O' */ 'Ｏ',
-    /* 50 'P' */ 'Ｐ',
-    /* 51 'Q' */ 'Ｑ',
-    /* 52 'R' */ 'Ｒ',
-    /* 53 'S' */ 'Ｓ',
-    /* 54 'T' */ 'Ｔ',
-    /* 55 'U' */ 'Ｕ',
-    /* 56 'V' */ 'Ｖ',
-    /* 57 'W' */ 'Ｗ',
-    /* 58 'X' */ 'Ｘ',
-    /* 59 'Y' */ 'Ｙ',
-    /* 5a 'Z' */ 'Ｚ',
-    /* 5b '[' */ '［',
-    /* 5c '\\' */ '￥',
-    /* 5d ']' */ '］',
-    /* 5e '^' */ '＾',
-    /* 5f '_' */ '＿',
-    /* 60 '`' */ '｀',
-    /* 61 'a' */ 'ａ',
-    /* 62 'b' */ 'ｂ',
-    /* 63 'c' */ 'ｃ',
-    /* 64 'd' */ 'ｄ',
-    /* 65 'e' */ 'ｅ',
-    /* 66 'f' */ 'ｆ',
-    /* 67 'g' */ 'ｇ',
-    /* 68 'h' */ 'ｈ',
-    /* 69 'i' */ 'ｉ',
-    /* 6a 'j' */ 'ｊ',
-    /* 6b 'k' */ 'ｋ',
-    /* 6c 'l' */ 'ｌ',
-    /* 6d 'm' */ 'ｍ',
-    /* 6e 'n' */ 'ｎ',
-    /* 6f 'o' */ 'ｏ',
-    /* 70 'p' */ 'ｐ',
-    /* 71 'q' */ 'ｑ',
-    /* 72 'r' */ 'ｒ',
-    /* 73 's' */ 'ｓ',
-    /* 74 't' */ 'ｔ',
-    /* 75 'u' */ 'ｕ',
-    /* 76 'v' */ 'ｖ',
-    /* 77 'w' */ 'ｗ',
-    /* 78 'x' */ 'ｘ',
-    /* 79 'y' */ 'ｙ',
-    /* 7a 'z' */ 'ｚ',
-    /* 7b '{' */ '｛',
-    /* 7c '|' */ '｜',
-    /* 7d '}' */ '｝',
-    /* 7e '~' */ '～',
-  };
+
 }

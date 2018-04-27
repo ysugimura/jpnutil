@@ -8,8 +8,12 @@ public class HanToZenTest {
 
   @Test
   public void test() {
-    assertEquals("東京トッキョきょかきょくａｂｃ１２３ＤＥＦＡＢＣパパバ　ﾞ",
-        HanToZen.convert("東京ﾄｯｷｮきょかきょくabc123DEFABCﾊﾟﾊﾟﾊﾞ ﾞ"));    
+    String s = HanToZen.convert("東京 ﾄｯｷｮきょかきょくabc123DEFABCﾊﾟﾊﾟﾊﾞ ﾞ");
+    assertEquals("東京　トッキョきょかきょくａｂｃ１２３ＤＥＦＡＢＣパパバ　゛", s);    
   }
 
+  @Test
+  public void tableTest() {
+    assertEquals(Constants.HANKATA_COUNT, HanToZen.HANKATA_TO_ZENKATA.length / 3);
+  }
 }
