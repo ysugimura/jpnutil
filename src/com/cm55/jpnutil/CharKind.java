@@ -1,9 +1,10 @@
 package com.cm55.jpnutil;
+import static com.cm55.jpnutil.Constants.*;
 
 /**
  * 日本語文字種
  */
-public class CharKind implements Constants {
+public class CharKind {
 
   public static final int HANKAKU  = 0x0001; // 半角文字
   public static final int ZENKAKU  = 0x0002; // 全角文字

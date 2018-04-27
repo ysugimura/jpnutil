@@ -2,6 +2,10 @@ package com.cm55.jpnutil;
 
 /**
  * 全角ひらがなを全角カタカナに変換する。
+ * <p>
+ * 変換対象となるのは、「全角ひらがな」のみ。これを全角カタカナに変換する。
+ * それ以外の文字種は素通しにする。
+ * </p>
  */
 public class HiraToKata implements Constants {
 
