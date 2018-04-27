@@ -28,9 +28,13 @@ public class HiraToKata implements Constants {
       super(n);
     }
     public void convert(char c) {
-      int code = (int)c;
-      if (ZENHIRA_START <= code && code <= ZENHIRA_END)
-        c = (char)(ZENKATA_START + (code - ZENHIRA_START));
+      // 文字が全角ひらがなと仮定し、スタートからの位置を求める
+      int index = (int)c - ZENHIRA_START;
+      
+      // この位置が全角カタカナの範囲であれば、全角カタカナに変換
+      if (0 <= index && index < ZENKATA_COUNT)
+        c = (char)(ZENKATA_START + index);
+      
       super.convert(c);
     }
   }

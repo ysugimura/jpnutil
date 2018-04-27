@@ -35,9 +35,9 @@ public class HanToZen implements Constants {
       // ペンド中の半角カタカナのある場合、濁音あるいは半濁音の可能性をチェック
       if (pendingHankata != 0) {
         int index = ((int)pendingHankata - HANKATA_START) * 3;
-        char plain = hankata2zenkata[index + 0];
-        char dakuon = hankata2zenkata[index + 1];
-        char handakuon = hankata2zenkata[index + 2];
+        char plain = HANKATA_TO_ZENKATA[index + 0];
+        char dakuon = HANKATA_TO_ZENKATA[index + 1];
+        char handakuon = HANKATA_TO_ZENKATA[index + 2];
         pendingHankata = 0;
         if (code == HANKATA_DAKUON) {
           if (dakuon != 0)
@@ -66,20 +66,20 @@ public class HanToZen implements Constants {
         int index = (code - HANKATA_START) * 3;
 
         // 濁音あるいは半濁音の可能性のある場合ペンドする。
-        if (hankata2zenkata[index + 1] != 0 || hankata2zenkata[index + 2] != 0) {
+        if (HANKATA_TO_ZENKATA[index + 1] != 0 || HANKATA_TO_ZENKATA[index + 2] != 0) {
           pendingHankata = c;
           return;
         }
 
         // 濁音あるいは半濁音の可能性がない。変換して終了。
-        super.convert(hankata2zenkata[index]);
+        super.convert(HANKATA_TO_ZENKATA[index]);
         return;
       }
 
       // ANK
       if (HANANK_START <= code && code <= HANANK_END) {
         int index = code - HANANK_START;
-        super.convert(hanank2zenank[index]);
+        super.convert(HANANK_TO_ZENANK[index]);
         return;
       }
 
@@ -92,14 +92,14 @@ public class HanToZen implements Constants {
       if (pendingHankata != 0) {
         int index = ((int)pendingHankata - HANKATA_START) * 3;
         pendingHankata = 0;
-        super.convert(hankata2zenkata[index]);
+        super.convert(HANKATA_TO_ZENKATA[index]);
       }
       super.flush();
     }
   }
 
 
-  static final char[]hankata2zenkata = new char[] {
+  static final char[]HANKATA_TO_ZENKATA = new char[] {
     /* ff61 '｡' */ '。', 0, 0,
     /* ff62 '｢' */ '「', 0, 0,
     /* ff63 '｣' */ '」', 0, 0,
@@ -168,7 +168,7 @@ public class HanToZen implements Constants {
 
   static final int HANANK_START = 0x20;
   static final int HANANK_END = 0x7E;
-  static char[]hanank2zenank = new char[] {
+  static char[]HANANK_TO_ZENANK = new char[] {
     /* 20 ' ' */ '　',
     /* 21 '!' */ '！',
     /* 22 '"' */ '”',
@@ -265,17 +265,4 @@ public class HanToZen implements Constants {
     /* 7d '}' */ '｝',
     /* 7e '~' */ '～',
   };
-
-
-  public static void main(String[]args) {
-
-    String s = HanToZen.convert(
-        "ﾜ"
-    );
-    System.out.println(s);
-/*
-    for (int i = 0; i < ZenToHan.zenkata2hankata.length / 2; i++) {
-      System.out.println("" + Integer.toHexString(ZenToHan.ZENKATA_START + i));
-    }*/
-  }
 }

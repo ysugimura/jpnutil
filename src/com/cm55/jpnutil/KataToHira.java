@@ -28,9 +28,14 @@ public class KataToHira implements Constants {
       super(n);
     }
     public void convert(char c) {
-      int code = (int)c;
-      if (ZENKATA_START <= code && code <= ZENKATA_END)
-        c = (char)(ZENHIRA_START + (code - ZENKATA_START));
+      // 全角カタカナと仮定して、スタート位置からの位置を求める
+      int index = (int)c - ZENKATA_START;
+      
+      // この位置が全角ひらがな範囲にあれば、全角ひらがなに変換
+      if (0 <= index && index < ZENHIRA_COUNT) {
+        c = (char)(ZENHIRA_START + index);
+      }
+      
       super.convert(c);
     }
   }

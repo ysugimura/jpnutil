@@ -11,4 +11,5 @@ public class ZenToHanTest {
         ZenToHan.convert("東京トッキョきょかきょくａｂｃ１２３ＤＥＦＡＢＣパパバ　ﾞ"));    
   }
 
+
 }
