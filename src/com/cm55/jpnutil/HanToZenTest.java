@@ -1,7 +1,8 @@
 package com.cm55.jpnutil;
 
-import org.junit.*;
 import static org.junit.Assert.*;
+
+import org.junit.*;
 
 
 public class HanToZenTest {
@@ -14,6 +15,6 @@ public class HanToZenTest {
 
   @Test
   public void tableTest() {
-    assertEquals(Constants.HANKATA_COUNT, HanToZen.HANKATA_TO_ZENKATA.length / 3);
+    assertEquals(Constants.HANKATA_COUNT, HankataToZenProcessor.HANKATA_TO_ZENKATA.length / 3);
   }
 }

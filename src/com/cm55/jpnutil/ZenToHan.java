@@ -9,12 +9,8 @@ public class ZenToHan implements Constants {
 
   /** 文字列を半角へ変換 */
   public static String convert(String s) {
-    final StringBuffer buf = new StringBuffer();
-    new Converter(new CharConverter(null) {
-      public void convert(char c) {
-        buf.append(c);
-      }
-    }).convert(s);
+    StringBuffer buf = new StringBuffer();
+    new Converter(new CharConverter.Terminal(c->buf.append(c))).convertFlush(s);
     return buf.toString();
   }
 

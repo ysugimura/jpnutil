@@ -11,14 +11,8 @@ public class HiraToKata implements Constants {
 
   /** 全角ひらがなを全角カタカナに変換 */
   public static String convert(String s) {
-    final StringBuffer buf = new StringBuffer();
-    Converter converter = new Converter(new CharConverter(null) {
-      public void convert(char c) {
-        buf.append(c);
-      }
-    });
-    converter.convert(s);
-    converter.flush();
+    StringBuffer buf = new StringBuffer();
+    new Converter(new CharConverter.Terminal(c->buf.append(c))).convertFlush(s);
     return buf.toString();
   }
   

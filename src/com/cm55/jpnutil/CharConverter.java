@@ -1,5 +1,7 @@
 package com.cm55.jpnutil;
 
+import java.util.function.*;
+
 /**
  * プッシュ型文字列コンバータ
  * <p>
@@ -31,17 +33,17 @@ package com.cm55.jpnutil;
 public class CharConverter {
   
   /** 次のコンバータ */
-  protected CharConverter next;
+  protected CharConverter nextConverter;
 
   /** 次のコンバータを指定して作成 */
   public CharConverter(CharConverter next) {
-    this.next = next;
+    this.nextConverter = next;
   }
 
   /** コンバータチェインの最後尾に指定コンバータを入れる */
   public void add(CharConverter n) { 
-    if (next != null) next.add(n);
-    else              next = n;
+    if (nextConverter != null) nextConverter.add(n);
+    else              nextConverter = n;
   }
       
   /** 文字列を変換する */
@@ -53,12 +55,28 @@ public class CharConverter {
     
   /** 文字を変換する。デフォルトでは次のコンバータに変換を依頼する */
   public void convert(char c) {
-    if (next != null) next.convert(c);
+    if (nextConverter != null) nextConverter.convert(c);
   }
   
   /** ペンド文字列がある場合にそれをフラッシュする */
   public void flush() {
-    if (next != null) next.flush();
+    if (nextConverter != null) nextConverter.flush();
+  }
+  
+  public void convertFlush(String s) {
+    convert(s);
+    flush();
+  }
+  
+  public static class Terminal extends CharConverter {
+    Consumer<Character>consumer;
+    public Terminal(Consumer<Character>consumer) {
+      super(null);
+      this.consumer = consumer;
+    }
+    public void convert(char c) {
+      consumer.accept(c);
+    }
   }
   
   /////////////////////////////////////////////////////////////////////////////

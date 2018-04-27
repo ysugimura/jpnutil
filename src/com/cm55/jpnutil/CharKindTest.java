@@ -1,11 +1,12 @@
 package com.cm55.jpnutil;
 
+import static com.cm55.jpnutil.CharKind.*;
+import static org.junit.Assert.*;
+
 import java.util.*;
 import java.util.stream.*;
 
 import org.junit.*;
-import static org.junit.Assert.*;
-import static com.cm55.jpnutil.CharKind.*;
 
 public class CharKindTest {
 
