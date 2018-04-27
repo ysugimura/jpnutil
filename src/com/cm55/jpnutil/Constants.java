@@ -1,7 +1,8 @@
 package com.cm55.jpnutil;
 
 /**
- *
+ *　ここで定義されている値は、あくまでも文字列変換のための便宜的な値であり、一般的なユニコード文字の値範囲を示すものではない。
+ * 例えば、{@link #HANANK_START}には空白が含まれていない。
  */
 public interface Constants {
 

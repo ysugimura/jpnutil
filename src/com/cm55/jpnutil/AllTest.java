@@ -6,7 +6,6 @@ import org.junit.runners.Suite.*;
 
 @RunWith(Suite.class) 
 @SuiteClasses( { 
-  CharKindTest.class,
   HanToZenTest.class,
   HiraToKataTest.class,
   KataToHiraTest.class,
