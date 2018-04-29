@@ -4,9 +4,9 @@ import java.util.*;
 
 public class MiscChars {
 
-  public static class ZenToHan extends SubConverter {
+  public static class ZenToHan extends CharConverter {
 
-    public boolean input(char c) {
+    public boolean process(char c) {
       Character converted = MISC_MAP.get(c);
       if (converted != null) {
         output(converted);

@@ -1,5 +1,9 @@
 package com.cm55.jpnutil;
 
+/**
+ * ASCIIコードの0x20-0x7eの範囲の文字について、全角・半角相互変換を行う。
+ * @author ysugimura
+ */
 public class Ascii {
   
   /*
@@ -48,9 +52,9 @@ public class Ascii {
   /**
    * 半角ASCII->全角ASCII変換
    */
-  public static class HanToZen extends SubConverter {
-
-    public boolean input(char c) {
+  public static class HanToZen extends CharConverter {
+    @Override
+    public boolean process(char c) {
       // 空白の変換
       if (c == HANKAKU_SPACE) {
         output(ZENKAKU_SPACE);
@@ -70,9 +74,9 @@ public class Ascii {
   /**
    * 全角ASCII->半角ASCII変換
    */
-  public static class ZenToHan extends SubConverter {
-
-    public boolean input(char c) {
+  public static class ZenToHan extends CharConverter {
+    @Override
+    public boolean process(char c) {
       if (c == ZENKAKU_SPACE) {
         output(HANKAKU_SPACE);
         return true;

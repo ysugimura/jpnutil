@@ -38,9 +38,9 @@ public class KanaConverter {
   static final int ZENKATA_COUNT = ZENKATA_END - ZENKATA_START + 1;
   
   /** 全角ひらがなから全角カタカナへ変換 */
-  public static class ZenHiraToZenKata extends SubConverter {     
+  public static class ZenHiraToZenKata extends CharConverter {     
     @Override
-    public boolean input(char c) {
+    public boolean process(char c) {
       // 文字が全角ひらがなと仮定し、スタートからの位置を求める
       int index = (int)c - ZENHIRA_START;
       
@@ -55,9 +55,9 @@ public class KanaConverter {
   }
   
   /** 全角カタカナから全角ひらがなへ変換 */
-  public static class ZenKataToZenHira extends SubConverter { 
+  public static class ZenKataToZenHira extends CharConverter { 
     @Override
-    public boolean input(char c) {
+    public boolean process(char c) {
       // 全角カタカナと仮定して、スタート位置からの位置を求める
       int index = (int)c - ZENKATA_START;
       
@@ -73,9 +73,9 @@ public class KanaConverter {
   }
   
   /** 全角ひらがなから半角カタカナへ変換 */
-  public static class ZenHiraToHanKata extends SubConverter {    
+  public static class ZenHiraToHanKata extends CharConverter {    
     @Override
-    public boolean input(char c) {
+    public boolean process(char c) {
       int index = c - ZENHIRA_START;
       if (index < 0 || ZENHIRA_COUNT <= index) return false;
       char c1 = TO_HANKATA_TABLE[index * 2 + 0];
@@ -95,9 +95,9 @@ public class KanaConverter {
   }
 
   /** 全角カタカナから半角カタカナへ変換 */
-  public static class ZenKataToHanKata extends SubConverter {    
+  public static class ZenKataToHanKata extends CharConverter {    
     @Override
-    public boolean input(char c) {
+    public boolean process(char c) {
       int index = c - ZENKATA_START;
       if (index < 0 || ZENKATA_COUNT <= index) return false;
       char c1 = TO_HANKATA_TABLE[index * 2 + 0];

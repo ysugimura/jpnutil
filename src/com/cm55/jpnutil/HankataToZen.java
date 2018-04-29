@@ -9,7 +9,7 @@ package com.cm55.jpnutil;
  * </p>
  * @author ysugimura
  */
-public class HankataToZen extends SubConverter {
+public class HankataToZen extends CharConverter {
    
   
   public static final int HANKATA_START     = 0xff61;
@@ -25,7 +25,7 @@ public class HankataToZen extends SubConverter {
   public static final char ZENKAKU_HANDAKUON = '゜'; // 0x309c, 全角単一半濁音
   
   // ペンド中の半角カタカナ
-  private int pendingHankata;
+  private char pendingHankata;
   
   
   /**
@@ -34,21 +34,20 @@ public class HankataToZen extends SubConverter {
    * @return true：処理済み、false:対象外
    */
   @Override
-  public boolean input(char c) {
-    int code = (int)c & 0xffff;
+  public boolean process(char c) {
     
     // 既にペンド中の半角カタカナがある場合、濁音あるいは半濁音の可能性をチェック
-    if (processPending(code)) return true;
+    if (processPending(c)) return true;
 
     // ここで取り扱う半角カタカナ範囲で無い場合には処理しない
-    if (code < HANKATA_START || HANKATA_END < code) return false;
+    if (c < HANKATA_START || HANKATA_END < c) return false;
     
     // HANKATA_TO_ZENKATAテーブルのインデックス
-    int index = (code - HANKATA_START) * 3;
+    int index = (c - HANKATA_START) * 3;
 
     // 濁音あるいは半濁音の可能性のある場合ペンドする。
     if (HANKATA_TO_ZENKATA[index + 1] != 0 || HANKATA_TO_ZENKATA[index + 2] != 0) {
-      pendingHankata = code;
+      pendingHankata = c;
       return true;
     }
 
@@ -58,7 +57,7 @@ public class HankataToZen extends SubConverter {
   }
 
   /** ペンド中の半角カタカナがあり、かつそれを処理した場合にはtrueを返す */
-  boolean processPending(int code) {
+  boolean processPending(char c) {
 
     // ペンド中の半角カタカナは無い
     if (pendingHankata == 0) return false;
@@ -72,7 +71,7 @@ public class HankataToZen extends SubConverter {
     pendingHankata = 0;
 
     // 今回の文字が半角濁音、あるいは全角濁音の場合
-    if (code == HANKATA_DAKUON || code == ZENKAKU_DAKUON) {
+    if (c == HANKATA_DAKUON || c == ZENKAKU_DAKUON) {
       // 対応する全角濁音付カタカナあり
       if (pendZenDakuon != 0) {
         output(pendZenDakuon);
@@ -85,7 +84,7 @@ public class HankataToZen extends SubConverter {
     }
 
     // 今回の文字が半角半濁音、あるいは全角半濁音の場合
-    if (code == HANKATA_HANDAKUON || code == ZENKAKU_HANDAKUON) {
+    if (c == HANKATA_HANDAKUON || c == ZENKAKU_HANDAKUON) {
       // 対応する全角半濁音付カタカナあり
       if (pendZenHandakuon != 0) {       
         output(pendZenHandakuon);
