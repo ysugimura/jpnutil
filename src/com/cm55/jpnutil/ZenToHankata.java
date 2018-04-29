@@ -2,13 +2,19 @@ package com.cm55.jpnutil;
 
 import static com.cm55.jpnutil.Constants.*;
 
+import java.util.function.*;
+
 /**
  * 全角ひらがな・カタカナから半角カタカナへの変換
  * @author ysugimura
  */
 public class ZenToHankata {
 
-  public static abstract class FromHira implements SubConverter {
+  public static class FromHira extends SubConverter {
+    FromHira(Consumer<Character>c) {
+      super(c);
+    }
+    
     public boolean input(char c) {
       int index = c - ZENHIRA_START;
       if (index < 0 || ZENHIRA_COUNT <= index) return false;
@@ -28,7 +34,11 @@ public class ZenToHankata {
     }
   }
 
-  public static abstract class FromKata implements SubConverter {
+  public static class FromKata extends SubConverter {
+    FromKata(Consumer<Character>c) {
+      super(c);
+    }
+    
     public boolean input(char c) {
       int index = c - ZENKATA_START;
       if (index < 0 || ZENKATA_COUNT <= index) return false;

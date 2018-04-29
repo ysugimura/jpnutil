@@ -17,19 +17,15 @@ public class HanToZen {
   /** 半角-->全角コンバータ */
   public static class Converter extends CharConverter {
 
-    HankataToZenProcessor hankataProcessor = new HankataToZenProcessor() {
-      public void output(char c) {
-        Converter.super.convert(c);
-      }      
-    };
-    Ascii.HanToZen asciiHanToZen = new Ascii.HanToZen() {
-      public void output(char c) {
-        Converter.super.convert(c);
-      }
-    };
+    HankataToZen hankataProcessor = new HankataToZen(this::output);
+    Ascii.HanToZen asciiHanToZen = new Ascii.HanToZen(this::output);
 
     public Converter(CharConverter n) {
       super(n);
+    }
+    
+    public void output(char c) {
+      super.convert(c);
     }
     
     public void convert(char c) {

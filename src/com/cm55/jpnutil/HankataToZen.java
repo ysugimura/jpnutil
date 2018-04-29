@@ -2,6 +2,8 @@ package com.cm55.jpnutil;
 
 import static com.cm55.jpnutil.Constants.*;
 
+import java.util.function.*;
+
 /**
  * 半角カタカナを全角カタカナに変換するプロセッサ
  * <p>
@@ -11,10 +13,14 @@ import static com.cm55.jpnutil.Constants.*;
  * </p>
  * @author ysugimura
  */
-public abstract class HankataToZenProcessor implements SubConverter {
+public class HankataToZen extends SubConverter {
   
   // ペンド中の半角カタカナ
   private int pendingHankata;
+  
+  HankataToZen(Consumer<Character>c) {
+    super(c);
+  }
   
   /**
    * 一文字を処理する。処理した場合はtrueを返し、対象外で未処理の場合はfalseを返す。

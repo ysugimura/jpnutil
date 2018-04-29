@@ -7,7 +7,7 @@ import org.junit.runners.Suite.*;
 @RunWith(Suite.class) 
 @SuiteClasses( { 
   AsciiTest.class,
-  HankataToZenProcessorTest.class,
+  HankataToZenTest.class,
   HanToZenTest.class,
   HiraToKataTest.class,
   KataToHiraTest.class,
