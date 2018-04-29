@@ -1,9 +1,5 @@
 package com.cm55.jpnutil;
 
-import static com.cm55.jpnutil.Constants.*;
-
-import java.util.function.*;
-
 /**
  * 半角カタカナを全角カタカナに変換するプロセッサ
  * <p>
@@ -14,13 +10,23 @@ import java.util.function.*;
  * @author ysugimura
  */
 public class HankataToZen extends SubConverter {
+   
+  
+  public static final int HANKATA_START     = 0xff61;
+  
+  public static final int HANKATA_DAKUON    = 0xff9e; // 半角カタカナ濁音
+  public static final int HANKATA_HANDAKUON = 0xff9f; // 半角カタカナ半濁音
+  
+  public static final int HANKATA_END       = 0xff9f;
+
+  public static final int HANKATA_COUNT = HANKATA_END - HANKATA_START + 1;
+  
+  public static final char ZENKAKU_DAKUON = '゛'; // 0x309b, 全角単一濁音
+  public static final char ZENKAKU_HANDAKUON = '゜'; // 0x309c, 全角単一半濁音
   
   // ペンド中の半角カタカナ
   private int pendingHankata;
   
-  HankataToZen(Consumer<Character>c) {
-    super(c);
-  }
   
   /**
    * 一文字を処理する。処理した場合はtrueを返し、対象外で未処理の場合はfalseを返す。
@@ -100,7 +106,8 @@ public class HankataToZen extends SubConverter {
   /**
    * ペンドされている文字をフラッシュする
    */
-  void flush() {
+  @Override
+  public void flush() {
     if (pendingHankata != 0) {
       int index = (pendingHankata - HANKATA_START) * 3;
       pendingHankata = 0;

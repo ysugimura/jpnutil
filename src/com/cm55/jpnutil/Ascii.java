@@ -1,7 +1,5 @@
 package com.cm55.jpnutil;
 
-import java.util.function.*;
-
 public class Ascii {
   
   /*
@@ -51,9 +49,7 @@ public class Ascii {
    * 半角ASCII->全角ASCII変換
    */
   public static class HanToZen extends SubConverter {
-    HanToZen(Consumer<Character>c) {
-      super(c);
-    }
+
     public boolean input(char c) {
       // 空白の変換
       if (c == HANKAKU_SPACE) {
@@ -75,9 +71,7 @@ public class Ascii {
    * 全角ASCII->半角ASCII変換
    */
   public static class ZenToHan extends SubConverter {
-    ZenToHan(Consumer<Character>c) {
-      super(c);
-    }
+
     public boolean input(char c) {
       if (c == ZENKAKU_SPACE) {
         output(HANKAKU_SPACE);

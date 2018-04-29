@@ -1,5 +1,8 @@
 package com.cm55.jpnutil;
 
+import com.cm55.jpnutil.KanaConverter.*;
+import com.cm55.jpnutil.SubConverter.*;
+
 /**
  * 全角ひらがなを全角カタカナに変換する。
  * <p>
@@ -7,29 +10,13 @@ package com.cm55.jpnutil;
  * それ以外の文字種は素通しにする。
  * </p>
  */
-public class HiraToKata implements Constants {
+public class HiraToKata  {
 
   /** 全角ひらがなを全角カタカナに変換 */
   public static String convert(String s) {
-    StringBuffer buf = new StringBuffer();
-    new Converter(new CharConverter.Terminal(c->buf.append(c))).convertFlush(s);
+    StringBuffer buf = new StringBuffer();    
+    new SubConverter(new ZenHiraToZenKata(), new PassThrough()).setConsumer(c->buf.append(c)).convert(s);
     return buf.toString();
   }
-  
-  /** 全角ひらがな-->全角カタカナコンバータ */
-  public static class Converter extends CharConverter { 
-    public Converter(CharConverter n) {
-      super(n);
-    }
-    public void convert(char c) {
-      // 文字が全角ひらがなと仮定し、スタートからの位置を求める
-      int index = (int)c - ZENHIRA_START;
-      
-      // この位置が全角カタカナの範囲であれば、全角カタカナに変換
-      if (0 <= index && index < ZENKATA_COUNT)
-        c = (char)(ZENKATA_START + index);
-      
-      super.convert(c);
-    }
-  }
+
 }

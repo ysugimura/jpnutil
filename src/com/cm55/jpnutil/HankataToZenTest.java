@@ -8,7 +8,7 @@ public class HankataToZenTest {
 
   @Test
   public void tableTest() {
-    assertEquals(Constants.HANKATA_COUNT, HankataToZen.HANKATA_TO_ZENKATA.length / 3);
+    assertEquals(HankataToZen.HANKATA_COUNT, HankataToZen.HANKATA_TO_ZENKATA.length / 3);
   }
 
 }

@@ -1,14 +1,11 @@
 package com.cm55.jpnutil;
 
 import java.util.*;
-import java.util.function.*;
 
 public class MiscChars {
 
   public static class ZenToHan extends SubConverter {
-    ZenToHan(Consumer<Character>c) {
-      super(c);
-    }
+
     public boolean input(char c) {
       Character converted = MISC_MAP.get(c);
       if (converted != null) {

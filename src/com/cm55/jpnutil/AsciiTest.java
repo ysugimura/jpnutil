@@ -1,9 +1,9 @@
 package com.cm55.jpnutil;
 
+import static com.cm55.jpnutil.Ascii.*;
 import static org.junit.Assert.*;
 
 import org.junit.*;
-import static com.cm55.jpnutil.Ascii.*;
 
 public class AsciiTest {
 
