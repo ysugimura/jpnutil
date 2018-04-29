@@ -7,10 +7,6 @@ import org.junit.*;
 
 public class ConstantsTest {
 
-  
-  @Test
-  public void testAnkCount() {
-    assertEquals(HANANK_COUNT, ZENANK_COUNT);
-  }
+
 
 }

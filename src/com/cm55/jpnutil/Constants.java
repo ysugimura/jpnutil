@@ -36,34 +36,7 @@ public interface Constants {
 
   /** 全角カタカナ数 */
   public static final int ZENKATA_COUNT = ZENKATA_END - ZENKATA_START + 1;
-  
-  /*
-   * 全角ANKの範囲。半角ANKの範囲と全く同じで、対応する文字が一致する
-   * ※ここでは空白が抜けていることに注意
-   */
-  
-  /** 全角ＡＮＫ開始位置 */
-  public static final int ZENANK_START = 0xff01;
 
-  /** 全角ＡＮＫ終了位置 */
-  public static final int ZENANK_END = 0xff5e;
-
-  /** 全角ANK数 */
-  public static final int ZENANK_COUNT = ZENANK_END - ZENANK_START + 1;
-  
-  /*
-   * 半角ANKの範囲。全角ANKの範囲と全く同じで、対応する文字が一致する
-   * ※ここでは空白は抜けていることに注意
-   */
-  
-  /** 半角ＡＮＫ開始位置 */
-  public static final int HANANK_START = 0x21;
-
-  /** 半角ＡＮＫ終了位置 */
-  public static final int HANANK_END = 0x7e;
-
-  /** 半角ANK数 */
-  public static final int HANANK_COUNT = HANANK_END - HANANK_START + 1;
   
     
   public static final int HANKATA_START     = 0xff61;

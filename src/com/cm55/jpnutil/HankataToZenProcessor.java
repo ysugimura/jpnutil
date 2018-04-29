@@ -11,7 +11,7 @@ import static com.cm55.jpnutil.Constants.*;
  * </p>
  * @author ysugimura
  */
-public abstract class HankataToZenProcessor {
+public abstract class HankataToZenProcessor implements SubConverter {
   
   // ペンド中の半角カタカナ
   private int pendingHankata;
@@ -21,7 +21,9 @@ public abstract class HankataToZenProcessor {
    * @param code 処理する文字
    * @return true：処理済み、false:対象外
    */
-  boolean process(int code) {
+  @Override
+  public boolean input(char c) {
+    int code = (int)c & 0xffff;
     
     // 既にペンド中の半角カタカナがある場合、濁音あるいは半濁音の可能性をチェック
     if (processPending(code)) return true;
@@ -88,8 +90,6 @@ public abstract class HankataToZenProcessor {
     
     return false;
   }  
-
-  abstract void output(char c);
   
   /**
    * ペンドされている文字をフラッシュする

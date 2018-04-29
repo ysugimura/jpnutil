@@ -18,9 +18,14 @@ public class HanToZen {
   public static class Converter extends CharConverter {
 
     HankataToZenProcessor hankataProcessor = new HankataToZenProcessor() {
-      void output(char c) {
+      public void output(char c) {
         Converter.super.convert(c);
       }      
+    };
+    Ascii.HanToZen asciiHanToZen = new Ascii.HanToZen() {
+      public void output(char c) {
+        Converter.super.convert(c);
+      }
     };
 
     public Converter(CharConverter n) {
@@ -29,24 +34,13 @@ public class HanToZen {
     
     public void convert(char c) {
 
-      int code = (int)c & 0xffff;
-
       // 半角カタカナの処理。処理された場合はtrueが返される。
-      if (hankataProcessor.process(code)) return;
+      if (hankataProcessor.input(c)) return;
 
-      // 空白
-      if (code == 0x20) {
-        super.convert('\u3000');
-        return;
-      }
-      
-      // ANK
-      if (HANANK_START <= code && code <= HANANK_END) {
-        int index = code - HANANK_START;
-        super.convert((char)(ZENANK_START + index));
-        return;
-      }
+      // 半角Asciiの処理。処理された場合はtrueを返す。
+      if (asciiHanToZen.input(c)) return;
 
+      // 上記の処理がされなかった
       super.convert(c);
     }
         

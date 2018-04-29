@@ -16,6 +16,13 @@ public class ZenToHan implements Constants {
 
   /** コンバータ */
   public static class Converter extends CharConverter {
+    
+    Ascii.ZenToHan asciiZenToHan = new Ascii.ZenToHan() {
+      public void output(char c) {
+        Converter.super.convert(c);
+      }
+    };
+    
     public Converter(CharConverter n) {
       super(n);
     }
@@ -35,10 +42,8 @@ public class ZenToHan implements Constants {
       }
       
       // 全角ANK
-      if (ZENANK_START <= code && code <= ZENANK_END) {
-        zenankToHanank(code);
-        return;
-      }
+      if (asciiZenToHan.input(c)) return;
+
       
       // その他
       Object mapObj = MISC_MAP.get(new Character(c));
@@ -84,16 +89,6 @@ public class ZenToHan implements Constants {
       }
       super.convert(c1);
       super.convert(c2);
-    }
-
-    /** 全角ANK->半角ANK */
-    void zenankToHanank(int code) {
-      int index = code - ZENANK_START;
-      if (0 <= index && index <= HANANK_COUNT) {
-        super.convert((char)(index + HANANK_START));
-        return;
-      }
-      super.convert((char)code);
     }
   }
 
