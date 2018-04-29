@@ -2,20 +2,34 @@ package com.cm55.jpnutil;
 
 import static com.cm55.jpnutil.Constants.*;
 
+/**
+ * 半角カタカナを全角カタカナに変換するプロセッサ
+ * <p>
+ * 半角カタカナを全角カタカナに変換するが、「ﾊﾟ」といった二文字からなる濁音・半濁音付きの文字列を「パ」といった一文字の全角文字に
+ * 変換する。
+ * このため、濁音・半濁音の可能性のある文字についてはいったん保留しておき、次に濁音・半濁音が来たときに、複合して一文字とする。
+ * </p>
+ * @author ysugimura
+ */
 public abstract class HankataToZenProcessor {
-  
-  abstract void output(char c);
   
   // ペンド中の半角カタカナ
   private int pendingHankata;
   
-  boolean processHankata(int code) {
+  /**
+   * 一文字を処理する。処理した場合はtrueを返し、対象外で未処理の場合はfalseを返す。
+   * @param code 処理する文字
+   * @return true：処理済み、false:対象外
+   */
+  boolean process(int code) {
     
-    // ペンド中の半角カタカナのある場合、濁音あるいは半濁音の可能性をチェック
+    // 既にペンド中の半角カタカナがある場合、濁音あるいは半濁音の可能性をチェック
     if (processPending(code)) return true;
 
-    // 半角カタカナ
+    // ここで取り扱う半角カタカナ範囲で無い場合には処理しない
     if (code < HANKATA_START || HANKATA_END < code) return false;
+    
+    // HANKATA_TO_ZENKATAテーブルのインデックス
     int index = (code - HANKATA_START) * 3;
 
     // 濁音あるいは半濁音の可能性のある場合ペンドする。
@@ -31,37 +45,55 @@ public abstract class HankataToZenProcessor {
 
   /** ペンド中の半角カタカナがあり、かつそれを処理した場合にはtrueを返す */
   boolean processPending(int code) {
+
+    // ペンド中の半角カタカナは無い
     if (pendingHankata == 0) return false;
+    
+    // ペンド中の半角カタカナに対応する全角カタカナ、濁音付全角カタカナ、半濁音付全角カタカナを得る
+    // もちろん存在しない場合もある
     int index = (pendingHankata - HANKATA_START) * 3;
-    char zenPlain = HANKATA_TO_ZENKATA[index + 0];
-    char zenDakuon = HANKATA_TO_ZENKATA[index + 1];
-    char zenHandakuon = HANKATA_TO_ZENKATA[index + 2];
+    char pendZenPlain = HANKATA_TO_ZENKATA[index + 0];
+    char pendZenDakuon = HANKATA_TO_ZENKATA[index + 1];
+    char pendZenHandakuon = HANKATA_TO_ZENKATA[index + 2];
     pendingHankata = 0;
-    
-    if (code == HANKATA_DAKUON) {
-      if (zenDakuon != 0)
-        output(zenDakuon);
-      else {
-        output(zenPlain);
-        output(ZENKAKU_DAKUON);
+
+    // 今回の文字が半角濁音、あるいは全角濁音の場合
+    if (code == HANKATA_DAKUON || code == ZENKAKU_DAKUON) {
+      // 対応する全角濁音付カタカナあり
+      if (pendZenDakuon != 0) {
+        output(pendZenDakuon);
+        return true;
       }
+      // 対応する全角濁音付カタカナ無し
+      output(pendZenPlain);
+      output(ZENKAKU_DAKUON);      
+      return true; 
+    }
+
+    // 今回の文字が半角半濁音、あるいは全角半濁音の場合
+    if (code == HANKATA_HANDAKUON || code == ZENKAKU_HANDAKUON) {
+      // 対応する全角半濁音付カタカナあり
+      if (pendZenHandakuon != 0) {       
+        output(pendZenHandakuon);
+        return true;
+      }
+      // 対応する全角半濁音付カタカナ無し
+      output(pendZenPlain);
+      output(ZENKAKU_HANDAKUON);      
       return true; 
     }
     
-    if (code == HANKATA_HANDAKUON) {
-      if (zenHandakuon != 0)
-        output(zenHandakuon);
-      else {
-        output(zenPlain);
-        output(ZENKAKU_HANDAKUON);
-      }
-      return true; 
-    }
+    // 濁音・半濁音無しの全角カタカナを出力し、今回の文字は未処理とする。
+    output(pendZenPlain);
     
-    output(zenPlain);
     return false;
   }  
+
+  abstract void output(char c);
   
+  /**
+   * ペンドされている文字をフラッシュする
+   */
   void flush() {
     if (pendingHankata != 0) {
       int index = (pendingHankata - HANKATA_START) * 3;
@@ -75,8 +107,10 @@ public abstract class HankataToZenProcessor {
    * 0:濁音半濁音の無い場合
    * 1:濁音のある場合
    * 2:半濁音のある場合
+   * いずれの場合も0の場合は対象文字が存在しない。
    */
   static final char[]HANKATA_TO_ZENKATA = new char[] {
+    // ここは正確にHANKATA_STARTの位置
     /* ff61 '｡' */ '。', 0, 0,
     /* ff62 '｢' */ '「', 0, 0,
     /* ff63 '｣' */ '」', 0, 0,
@@ -140,5 +174,6 @@ public abstract class HankataToZenProcessor {
     /* ff9d 'ﾝ' */ 'ン', 0, 0,
     /* ff9e 'ﾞ' */ ZENKAKU_DAKUON, 0, 0,
     /* ff9f 'ﾟ' */ ZENKAKU_HANDAKUON, 0, 0,
+    // ここは正確にHANKATA_ENDの位置
   };
 }

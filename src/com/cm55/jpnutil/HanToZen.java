@@ -32,7 +32,7 @@ public class HanToZen {
       int code = (int)c & 0xffff;
 
       // 半角カタカナの処理。処理された場合はtrueが返される。
-      if (hankataProcessor.processHankata(code)) return;
+      if (hankataProcessor.process(code)) return;
 
       // 空白
       if (code == 0x20) {

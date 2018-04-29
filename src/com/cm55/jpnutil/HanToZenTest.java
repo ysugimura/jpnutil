@@ -9,12 +9,9 @@ public class HanToZenTest {
 
   @Test
   public void test() {
-    String s = HanToZen.convert("東京 ﾄｯｷｮきょかきょくabc123DEFABCﾊﾟﾊﾟﾊﾞ ﾞ");
-    assertEquals("東京　トッキョきょかきょくａｂｃ１２３ＤＥＦＡＢＣパパバ　゛", s);    
+    assertEquals("ポカホンタス１２３", HanToZen.convert("ﾎﾟｶﾎﾝﾀｽ123"));
+    assertEquals("東京　トッキョきょかきょくａｂｃ１２３ＤＥＦＡＢＣパパバ　゛", 
+        HanToZen.convert("東京 ﾄｯｷｮきょかきょくabc123DEFABCﾊﾟﾊﾟﾊﾞ ﾞ"));    
   }
 
-  @Test
-  public void tableTest() {
-    assertEquals(Constants.HANKATA_COUNT, HankataToZenProcessor.HANKATA_TO_ZENKATA.length / 3);
-  }
 }

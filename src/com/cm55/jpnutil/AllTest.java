@@ -6,6 +6,7 @@ import org.junit.runners.Suite.*;
 
 @RunWith(Suite.class) 
 @SuiteClasses( { 
+  HankataToZenProcessorTest.class,
   HanToZenTest.class,
   HiraToKataTest.class,
   KataToHiraTest.class,
