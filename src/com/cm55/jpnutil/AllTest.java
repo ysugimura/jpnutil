@@ -11,6 +11,7 @@ import org.junit.runners.Suite.*;
   HanToZenTest.class,
   HiraToKataTest.class,
   KataToHiraTest.class,
+  NormalizerTest.class,
   SJISUtilTest.class,
   ZenToHanTest.class,
 })

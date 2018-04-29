@@ -1,12 +1,20 @@
 package com.cm55.jpnutil;
 
 import java.util.*;
+import java.util.stream.*;
 
 /**
- * 文字列コンバータ
- * 
+ * 文字列の正規化
+ * <p>
+ * 検索インデックス作成前に文字種の違いによって検索が失敗しないよう正規化する。これには以下がある。
+ * </p>
+ * <ul>
+ * <li>すべての文字を全角文字にする。
+ * <li>すべてのアルファベットを大文字にする。
+ * <li>すべてのカタカナをひらがなにする。ただし、対応するひらがなが無い場合はそのまま
+ * <li>前後のスペースを除去し、途中の連続した複数のスペースは一つにする。
+ * </ul>
  * @author ysugimura
- *
  */
 public class Normalizer {
 
@@ -26,61 +34,14 @@ public class Normalizer {
    * @return 全角ひらがな＋全角大文字アルファベット＋その他の全角文字
    */
   public static String normalize(String input) {
-    if (input == null)
-      return null;
+    if (input == null) return null;
     String converted = KataToHira.convert(HanToZen.convert(input)).toUpperCase();
-    String[] splited = splitBySpace(converted);
-    StringBuilder result = new StringBuilder();
-    for (String s : splited) {
-      if (result.length() > 0)
-        result.append("\u3000");
-      result.append(s);
-    }
-    return result.toString();
+    List<String>splited = splitBySpace(converted);
+    return splited.stream().collect(Collectors.joining("\u3000"));
   }
 
-  /**
-   * 「全角ひらがな」を「全角カタカナ」に変換する。それ以外は変更なし
-   * 
-   * @param input
-   *          全角ひらがな混じり文字列
-   * @return 全角カタカナ混じり文字列
-   */
-  public static String toKatakana(String input) {
-    if (input == null)
-      return null;
-    return HiraToKata.convert(input);
+  public static List<String>splitBySpace(String input) {
+    return Arrays.stream(input.split("[\u0020|\u3000]+"))
+      .filter(s->s.length() > 0).collect(Collectors.toList());
   }
-
-  /**
-   * 半角に変換する
-   */
-  public static String toHankaku(String input) {
-    return ZenToHan.convert(input);
-  }
-
-  public static String[] splitBySpace(String input) {
-
-    // null入力の場合はnullを返す。
-    if (input == null)
-      return null;
-
-    // 結果リスト
-    List<String> result = new ArrayList<String>();
-
-    // 半角空白もしくは全角空白の１つ以上の連続で区切る
-    for (String splited : input.split("[\u0020|\u3000]+")) {
-
-      // 長さ０のものは捨てる
-      if (splited.length() == 0)
-        continue;
-
-      // 結果に追加する
-      result.add(splited);
-    }
-
-    // 結果を配列にして返す。
-    return result.toArray(new String[0]);
-  }
-
 }

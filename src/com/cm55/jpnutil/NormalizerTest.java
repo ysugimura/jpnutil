@@ -5,38 +5,39 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 public class NormalizerTest {
-
-  Normalizer converter;
   
   @Before
   public void before() {
-    converter = new Normalizer();
+
   }
   
   @Test
   public void normalizeのテスト() {
-    String s = converter.normalize("東京都 とっきょ ｷｮｶｷｮｸ123aBC");
+    String s = Normalizer.normalize(" 東京都 　 とっきょ ｷｮｶｷｮｸ123aBC ");
     //ystem.out.println(s);
     assertEquals("東京都　とっきょ　きょかきょく１２３ＡＢＣ", s);
   }
 
   @Test
   public void normalizeのテスト2() {
-    String s = converter.normalize("{}*+-=)(&'%$#!_?/><;:@");
+    String o = "{}*+-=)(&'%$#!_?/><;:@";
+    String s = Normalizer.normalize(o);
     //ystem.out.println(s);
-    assertEquals("｛｝＊＋－＝）（＆’％＄＃！＿？／＞＜；：＠", s);
+    String r = "｛｝＊＋－＝）（＆\uff07％＄＃！＿？／＞＜；：＠";
+    
+    /*
+    for (int i = 0; i < s.length(); i++) {
+      System.out.println("" + s.charAt(i) + "," + Integer.toHexString(o.charAt(i)) + "," + Integer.toHexString(s.charAt(i))
+        +"," + Integer.toHexString(r.charAt(i)) + "," + (s.charAt(i) == r.charAt(i)));
+    }
+    */
+    assertEquals(r, s);
   }
   
   @Test
   public void normalizeのテスト3() {
-    String s = converter.normalize(" 1\u0020\u30002 ");
+    String s = Normalizer.normalize(" 1\u0020\u30002 ");
     assertEquals("１\u3000２", s);
   }
-  
-  @Test
-  public void toHankakuのテスト() {
-    String input = "東京都　とっきょ　きょかきょく１２３ＡＢＣー１－";
-    String output = converter.toHankaku(input);
-    assertEquals("東京都 ﾄｯｷｮ ｷｮｶｷｮｸ123ABCｰ1-", output);
-  }
+
 }

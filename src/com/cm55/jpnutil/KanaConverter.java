@@ -1,5 +1,7 @@
 package com.cm55.jpnutil;
 
+import java.util.function.*;
+
 /**
  * ひらがな・カタカナコンバータ
  * @author ysugimura
@@ -38,81 +40,85 @@ public class KanaConverter {
   static final int ZENKATA_COUNT = ZENKATA_END - ZENKATA_START + 1;
   
   /** 全角ひらがなから全角カタカナへ変換 */
-  public static class ZenHiraToZenKata extends CharConverter {     
+  public static class ZenHiraToZenKata extends Converter.PerChar {     
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       // 文字が全角ひらがなと仮定し、スタートからの位置を求める
       int index = (int)c - ZENHIRA_START;
       
       // この位置が全角カタカナの範囲であれば、全角カタカナに変換
       if (0 <= index && index < ZENKATA_COUNT) {
-        output((char)(ZENKATA_START + index));
-        return true;
+        output.accept((char)(ZENKATA_START + index));
+        return;
       }
       
-      return false;
+      output.accept(c);
     }
   }
   
   /** 全角カタカナから全角ひらがなへ変換 */
-  public static class ZenKataToZenHira extends CharConverter { 
+  public static class ZenKataToZenHira extends Converter.PerChar { 
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       // 全角カタカナと仮定して、スタート位置からの位置を求める
       int index = (int)c - ZENKATA_START;
       
       // この位置が全角ひらがな範囲にあれば、全角ひらがなに変換
       if (0 <= index && index < ZENHIRA_COUNT) {
         c = (char)(ZENHIRA_START + index);
-        output(c);
-        return true;
+        output.accept(c);
+        return;
       }
       
-      return false;
+      output.accept(c);
     }
   }
   
   /** 全角ひらがなから半角カタカナへ変換 */
-  public static class ZenHiraToHanKata extends CharConverter {    
+  public static class ZenHiraToHanKata extends Converter.PerChar {    
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       int index = c - ZENHIRA_START;
-      if (index < 0 || ZENHIRA_COUNT <= index) return false;
+      if (index < 0 || ZENHIRA_COUNT <= index) {
+        output.accept(c);
+        return;
+      }
       char c1 = TO_HANKATA_TABLE[index * 2 + 0];
       char c2 = TO_HANKATA_TABLE[index * 2 + 1];
       if (c1 == 0) {
-        output(c);
-        return true;
+        output.accept(c);
+        return;
       }
       if (c2 == 0) {
-        output(c1);
-        return true;
+        output.accept(c1);
+        return;
       }
-      output(c1);
-      output(c2);
-      return true;
+      output.accept(c1);
+      output.accept(c2);
     }
   }
 
   /** 全角カタカナから半角カタカナへ変換 */
-  public static class ZenKataToHanKata extends CharConverter {    
+  public static class ZenKataToHanKata extends Converter.PerChar {    
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       int index = c - ZENKATA_START;
-      if (index < 0 || ZENKATA_COUNT <= index) return false;
+      if (index < 0 || ZENKATA_COUNT <= index) {
+        output.accept(c);
+        return;
+      }
       char c1 = TO_HANKATA_TABLE[index * 2 + 0];
       char c2 = TO_HANKATA_TABLE[index * 2 + 1];
       if (c1 == 0) {
-        output(c);
-        return true;
+        output.accept(c);
+        return;
       }
       if (c2 == 0) {
-        output(c1);
-        return true;
+        output.accept(c1);
+        return;
       }
-      output(c1);
-      output(c2);
-      return true;
+      output.accept(c1);
+      output.accept(c2);
     }
   }
   

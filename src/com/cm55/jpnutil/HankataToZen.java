@@ -1,5 +1,7 @@
 package com.cm55.jpnutil;
 
+import java.util.function.*;
+
 /**
  * 半角カタカナを全角カタカナに変換するプロセッサ
  * <p>
@@ -9,7 +11,7 @@ package com.cm55.jpnutil;
  * </p>
  * @author ysugimura
  */
-public class HankataToZen extends CharConverter {
+public class HankataToZen extends Converter {
    
   
   public static final int HANKATA_START     = 0xff61;
@@ -24,20 +26,33 @@ public class HankataToZen extends CharConverter {
   public static final char ZENKAKU_DAKUON = '゛'; // 0x309b, 全角単一濁音
   public static final char ZENKAKU_HANDAKUON = '゜'; // 0x309c, 全角単一半濁音
   
-  // ペンド中の半角カタカナ
-  private char pendingHankata;
+  static class Context {
   
+    // ペンド中の半角カタカナ
+    private char pendingHankata;
+  }
+  
+
+  @Override
+  public String convert(String s) {
+    StringBuilder buf = new StringBuilder();
+    Context ctx = new Context();
+    for (char ch: s.toCharArray()) {
+      if (!process(c->buf.append(c), ch, ctx)) buf.append(ch);
+    }
+    flush(c->buf.append(c), ctx);
+    return buf.toString();
+  }
   
   /**
    * 一文字を処理する。処理した場合はtrueを返し、対象外で未処理の場合はfalseを返す。
    * @param code 処理する文字
    * @return true：処理済み、false:対象外
    */
-  @Override
-  public boolean process(char c) {
+  boolean process(CharOutput output, char c, Context ctx) {
     
     // 既にペンド中の半角カタカナがある場合、濁音あるいは半濁音の可能性をチェック
-    if (processPending(c)) return true;
+    if (processPending(output, c, ctx)) return true;
 
     // ここで取り扱う半角カタカナ範囲で無い場合には処理しない
     if (c < HANKATA_START || HANKATA_END < c) return false;
@@ -47,39 +62,39 @@ public class HankataToZen extends CharConverter {
 
     // 濁音あるいは半濁音の可能性のある場合ペンドする。
     if (HANKATA_TO_ZENKATA[index + 1] != 0 || HANKATA_TO_ZENKATA[index + 2] != 0) {
-      pendingHankata = c;
+      ctx.pendingHankata = c;
       return true;
     }
 
     // 濁音あるいは半濁音の可能性がない。変換して終了。
-    output(HANKATA_TO_ZENKATA[index]);
+    output.accept(HANKATA_TO_ZENKATA[index]);
     return true;
   }
 
   /** ペンド中の半角カタカナがあり、かつそれを処理した場合にはtrueを返す */
-  boolean processPending(char c) {
+  boolean processPending(CharOutput output, char c, Context ctx) {
 
     // ペンド中の半角カタカナは無い
-    if (pendingHankata == 0) return false;
+    if (ctx.pendingHankata == 0) return false;
     
     // ペンド中の半角カタカナに対応する全角カタカナ、濁音付全角カタカナ、半濁音付全角カタカナを得る
     // もちろん存在しない場合もある
-    int index = (pendingHankata - HANKATA_START) * 3;
+    int index = (ctx.pendingHankata - HANKATA_START) * 3;
     char pendZenPlain = HANKATA_TO_ZENKATA[index + 0];
     char pendZenDakuon = HANKATA_TO_ZENKATA[index + 1];
     char pendZenHandakuon = HANKATA_TO_ZENKATA[index + 2];
-    pendingHankata = 0;
+    ctx.pendingHankata = 0;
 
     // 今回の文字が半角濁音、あるいは全角濁音の場合
     if (c == HANKATA_DAKUON || c == ZENKAKU_DAKUON) {
       // 対応する全角濁音付カタカナあり
       if (pendZenDakuon != 0) {
-        output(pendZenDakuon);
+        output.accept(pendZenDakuon);
         return true;
       }
       // 対応する全角濁音付カタカナ無し
-      output(pendZenPlain);
-      output(ZENKAKU_DAKUON);      
+      output.accept(pendZenPlain);
+      output.accept(ZENKAKU_DAKUON);      
       return true; 
     }
 
@@ -87,17 +102,17 @@ public class HankataToZen extends CharConverter {
     if (c == HANKATA_HANDAKUON || c == ZENKAKU_HANDAKUON) {
       // 対応する全角半濁音付カタカナあり
       if (pendZenHandakuon != 0) {       
-        output(pendZenHandakuon);
+        output.accept(pendZenHandakuon);
         return true;
       }
       // 対応する全角半濁音付カタカナ無し
-      output(pendZenPlain);
-      output(ZENKAKU_HANDAKUON);      
+      output.accept(pendZenPlain);
+      output.accept(ZENKAKU_HANDAKUON);      
       return true; 
     }
     
     // 濁音・半濁音無しの全角カタカナを出力し、今回の文字は未処理とする。
-    output(pendZenPlain);
+    output.accept(pendZenPlain);
     
     return false;
   }  
@@ -105,12 +120,11 @@ public class HankataToZen extends CharConverter {
   /**
    * ペンドされている文字をフラッシュする
    */
-  @Override
-  public void flush() {
-    if (pendingHankata != 0) {
-      int index = (pendingHankata - HANKATA_START) * 3;
-      pendingHankata = 0;
-      output(HANKATA_TO_ZENKATA[index]);
+   void flush(CharOutput output, Context ctx) {
+    if (ctx.pendingHankata != 0) {
+      int index = (ctx.pendingHankata - HANKATA_START) * 3;
+      ctx.pendingHankata = 0;
+      output.accept(HANKATA_TO_ZENKATA[index]);
     }
   }
   
@@ -188,4 +202,5 @@ public class HankataToZen extends CharConverter {
     /* ff9f 'ﾟ' */ ZENKAKU_HANDAKUON, 0, 0,
     // ここは正確にHANKATA_ENDの位置
   };
+
 }

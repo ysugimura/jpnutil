@@ -1,18 +1,19 @@
 package com.cm55.jpnutil;
 
 import java.util.*;
+import java.util.function.*;
 
 public class MiscChars {
 
-  public static class ZenToHan extends CharConverter {
+  public static class ZenToHan extends Converter.PerChar {
 
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       Character converted = MISC_MAP.get(c);
       if (converted != null) {
-        output(converted);
-        return true;
+        output.accept(converted);
+        return;
       }
-      return false;
+      output.accept(c);
     }
   }
   

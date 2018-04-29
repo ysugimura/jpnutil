@@ -1,7 +1,7 @@
 package com.cm55.jpnutil;
 
 import com.cm55.jpnutil.KanaConverter.*;
-import com.cm55.jpnutil.CharConverter.*;
+import com.cm55.jpnutil.Converter.*;
 
 /**
  * 全角ひらがなを全角カタカナに変換する。
@@ -13,15 +13,12 @@ import com.cm55.jpnutil.CharConverter.*;
 public class HiraToKata  {
 
   private static final Cascading cascading = new Cascading(
-    new ZenHiraToZenKata(),  // 全角ひらがなを全角カタカナに変換
-    new PassThrough() // 上記以外の文字を素通しする
+    new ZenHiraToZenKata()  // 全角ひらがなを全角カタカナに変換
   );
     
   /** 全角ひらがなを全角カタカナに変換 */
-  public static synchronized String convert(String s) {
-    StringBuffer buf = new StringBuffer();    
-    cascading.to(c->buf.append(c)).convert(s);
-    return buf.toString();
+  public static String convert(String s) {
+    return cascading.convert(s);
   }
 
 }

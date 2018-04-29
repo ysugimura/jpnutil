@@ -1,5 +1,7 @@
 package com.cm55.jpnutil;
 
+import java.util.function.*;
+
 /**
  * ASCIIコードの0x20-0x7eの範囲の文字について、全角・半角相互変換を行う。
  * @author ysugimura
@@ -52,41 +54,42 @@ public class Ascii {
   /**
    * 半角ASCII->全角ASCII変換
    */
-  public static class HanToZen extends CharConverter {
+  public static class HanToZen extends Converter.PerChar {
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       // 空白の変換
       if (c == HANKAKU_SPACE) {
-        output(ZENKAKU_SPACE);
-        return true;
+        output.accept(ZENKAKU_SPACE);
+        return;
       }
       
       // 半角ANK->全角ANK数
       int index = c - HANANK_START;
       if (0 <= index && index < ANK_COUNT) {
-        output((char)(ZENANK_START + index));
-        return true;
+        output.accept((char)(ZENANK_START + index));
+        return;
       }
-      return false;
+      
+      output.accept(c);
     }
   }
 
   /**
    * 全角ASCII->半角ASCII変換
    */
-  public static class ZenToHan extends CharConverter {
+  public static class ZenToHan extends Converter.PerChar {
     @Override
-    public boolean process(char c) {
+    public void process(CharOutput output, char c) {
       if (c == ZENKAKU_SPACE) {
-        output(HANKAKU_SPACE);
-        return true;
+        output.accept(HANKAKU_SPACE);
+        return;
       }
       int index = c - ZENANK_START;
       if (0 <= index && index < ANK_COUNT) {
-        output((char)(index + HANANK_START));
-        return true; 
+        output.accept((char)(index + HANANK_START));
+        return; 
       }
-      return false;
+      output.accept(c);
     }
   }
 }

@@ -20,32 +20,15 @@ public class AsciiTest {
     char[]original = new char[0x7f - 0x20];
     IntStream.range(0x20, 0x7f).forEach(c-> { 
       original[c - 0x20] = (char)c; 
-   });
+    });
+    String origin = new String(original);
 
-    char[]zenkaku;
-    {
-      StringBuffer zenkakuBuf = new StringBuffer();
-      Ascii.HanToZen hanToZen = new Ascii.HanToZen();    
-      hanToZen.to(c->zenkakuBuf.append(c));
-      for (char c: original) {
-        boolean r = hanToZen.process(c);
-        assertTrue(r);
-      }
-      zenkaku = zenkakuBuf.toString().toCharArray();
-    }
+    Ascii.HanToZen hanToZen = new Ascii.HanToZen();    
+    String zenkaku = hanToZen.convert(origin);
     
-    char[]hankaku;
-    {
-      StringBuffer hankakuBuf = new StringBuffer();
-      Ascii.ZenToHan zenToHan = new Ascii.ZenToHan();
-      zenToHan.to(c->hankakuBuf.append(c));
-      for (char c: zenkaku) {
-        boolean r = zenToHan.process(c);        
-        assertTrue(r);
-      }
-      hankaku = hankakuBuf.toString().toCharArray();
-    }
+    Ascii.ZenToHan zenToHan = new Ascii.ZenToHan();
+    String hankaku = zenToHan.convert(zenkaku);
 
-    assertArrayEquals(original, hankaku);
+    assertEquals(origin, hankaku);
   }
 }
