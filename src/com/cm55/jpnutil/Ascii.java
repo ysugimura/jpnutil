@@ -1,7 +1,5 @@
 package com.cm55.jpnutil;
 
-import java.util.function.*;
-
 /**
  * ASCIIコードの0x20-0x7eの範囲の文字について、全角・半角相互変換を行う。
  * @author ysugimura

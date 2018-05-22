@@ -1,7 +1,6 @@
 package com.cm55.jpnutil;
 
 import java.util.*;
-import java.util.function.*;
 
 public class MiscChars {
 

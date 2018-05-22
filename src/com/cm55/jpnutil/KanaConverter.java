@@ -1,7 +1,5 @@
 package com.cm55.jpnutil;
 
-import java.util.function.*;
-
 /**
  * ひらがな・カタカナコンバータ
  * @author ysugimura

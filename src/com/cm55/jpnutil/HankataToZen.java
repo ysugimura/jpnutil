@@ -1,7 +1,5 @@
 package com.cm55.jpnutil;
 
-import java.util.function.*;
-
 /**
  * 半角カタカナを全角カタカナに変換するプロセッサ
  * <p>

@@ -1,7 +1,7 @@
 package com.cm55.jpnutil;
 
-import com.cm55.jpnutil.KanaConverter.*;
 import com.cm55.jpnutil.Converter.*;
+import com.cm55.jpnutil.KanaConverter.*;
 
 /**
  * 全角カタカナを全角ひらがなに変換する。
